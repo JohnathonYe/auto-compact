@@ -22,9 +22,19 @@
 dsh plugin --profile web add auto-compact
 ```
 
-该命令会自动：安装依赖 → 识别包的 `dsh.bundle` 声明 → 把 `auto-compact` 加入 profile 的 `dsh.profile.bundles` 层 → 重启/热加载后插件生效。卸载同理：`dsh plugin --profile web remove auto-compact`。
+该命令会自动：安装依赖 → 识别包的 `dsh.bundle` 声明 → 把 `auto-compact` 加入 profile 的 `dsh.profile.bundles` 层。卸载同理：`dsh plugin --profile web remove auto-compact`。
 
 > profile 名字不是 `web` 时（例如自定义 profile），把 `--profile web` 换成你的 profile 名。
+
+### 装完即可用（三步）
+
+```bash
+pm2 restart dsh-web        # ① 重启 DSH（没有 pm2 就重启服务进程）
+```
+② 浏览器强刷页面：macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`
+③ 输入区右侧出现阈值圆环 ✅
+
+> 强刷很重要：插件 Client 半随页面加载注入，普通刷新可能命中缓存导致圆环不出现。
 
 ### 备选：手动安装（旧方式）
 
@@ -42,8 +52,6 @@ pnpm add auto-compact
 ```
 
 > ⚠️ 如果你以前用手动行安装过，改用推荐方式前**务必先删除 `cordis.patch.yml` 里的手动行**，否则会双挂载（两个 Host 半、两个圆环）。
-
-**安装完成后必须强刷浏览器**（macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`）：插件 Client 半随页面加载注入，普通刷新可能命中缓存导致圆环不出现。强刷后输入区右侧即出现阈值圆环。
 
 ## 使用
 
