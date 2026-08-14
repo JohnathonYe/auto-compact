@@ -34,7 +34,7 @@ curl -fsSL https://raw.githubusercontent.com/JohnathonYe/auto-compact/main/scrip
 
 > 脚本内部已自动处理：`dsh` 命令通常不在全局 PATH（DSH 一般经 npx 安装，直接敲 `dsh` 会报 command not found），脚本会自动改用 npx 调用，无需用户手动处理。
 
-### 手动安装（可选，想看清每一步）
+### 或者用
 
 ```bash
 npx -y --package @deepseek-ai/dsh dsh plugin --profile web add auto-compact
