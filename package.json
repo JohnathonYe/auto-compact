@@ -19,6 +19,7 @@
   "license": "MIT",
   "keywords": [
     "dsh",
+    "dsh-plugin",
     "deepseek-harness",
     "compaction",
     "context",
