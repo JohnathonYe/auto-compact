@@ -16,44 +16,38 @@
 
 ## 安装
 
-### 推荐：一键脚本（装完刷新页面就能用，**无需重启**）
+**前置**：已装好 DSH（`dsh web` 能正常运行），Node.js ≥ 20、pnpm ≥ 10。
+
+### 一条命令安装
 
 ```bash
-bash scripts/install.sh
+npx -y --package @deepseek-ai/dsh dsh plugin --profile web add auto-compact
 ```
 
-脚本自动完成两步：安装 npm 依赖 → 把挂载行写进 `cordis.patch.yml`。DSH 对 patch 文件有 **HMR 热监听**，写入立即生效。
+该命令会安装 npm 依赖，并把插件注册进 profile 的 `dsh.profile.bundles` 层（官方 bundle 通道）。
 
-### 或手动两步（同样热生效，不用重启）
+### 装完重启 DSH
 
-```bash
-cd ~/.dsh/profiles/web
-pnpm add auto-compact
-```
+bundle 挂载在 DSH 启动时合并，装完需要**重启 DSH 进程**才生效：
 
-然后在 `cordis.patch.yml` 末尾追加：
+- 用 pm2 管理：`pm2 restart dsh-web`
+- 其他方式：重启你运行 DSH 的方式（例如直接启动的终端里 `Ctrl+C` 后重新运行 `dsh web`）
 
-```yaml
-- insert:
-    - id: auto-compact
-      name: auto-compact
-```
-
-### 装完只需一步：强刷浏览器
-
-浏览器强刷页面（macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`），输入区右侧即出现阈值圆环 ✅
+重启后强刷浏览器页面（macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`），输入区右侧即出现阈值圆环 ✅
 
 > 强刷很重要：插件 Client 半随页面加载注入，普通刷新可能命中缓存导致圆环不出现。
 
-### 备选：官方 bundle 通道（需要重启 DSH）
+### 更新
+
+重跑安装命令即更新到最新版（装完同样重启 DSH + 强刷浏览器）。
+
+### 卸载
 
 ```bash
-dsh plugin --profile web add auto-compact
+npx -y --package @deepseek-ai/dsh dsh plugin --profile web remove auto-compact
 ```
 
-该通道把插件加进 profile 的 `dsh.profile.bundles` 层，但 manifest 不热监听，装完需要重启 DSH 进程才生效。
-
-> 卸载：`pnpm remove auto-compact`（热挂载方式）或 `dsh plugin --profile web remove auto-compact`（bundle 方式），并删除挂载行。切换安装方式前先删掉旧的挂载行/依赖，避免双挂载（两个 Host 半、两个圆环）。
+卸载后同样重启生效；若曾手动在 `cordis.patch.yml` 写过挂载行，一并删除，避免双挂载（两个 Host 半、两个圆环）。
 
 ## 使用
 
