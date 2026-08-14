@@ -18,36 +18,34 @@
 
 **前置**：已装好 DSH（`dsh web` 能正常运行），Node.js ≥ 20、pnpm ≥ 10。
 
-### 一条命令安装
+### 一键安装（推荐，复制粘贴即可）
+
+**macOS / Linux**（Windows 装 Git Bash 或 WSL 也可）：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/JohnathonYe/auto-compact/main/scripts/install.sh | bash
+```
+
+脚本自动完成全部步骤：安装 npm 依赖 → 注册官方挂载（`dsh.profile.bundles`）→ 清理旧版残留的挂载行。你只需要：
+
+1. 跑上面这一条命令
+2. **重启 DSH**（装完后脚本会提示命令；也可以加上 `--restart` 让它自动重启：`curl ... | bash -s --restart`）
+3. 强刷浏览器（macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`），输入区右侧出现阈值圆环 ✅
+
+> 脚本内部已自动处理：`dsh` 命令通常不在全局 PATH（DSH 一般经 npx 安装，直接敲 `dsh` 会报 command not found），脚本会自动改用 npx 调用，无需用户手动处理。
+
+### 手动安装（可选，想看清每一步）
 
 ```bash
 npx -y --package @deepseek-ai/dsh dsh plugin --profile web add auto-compact
 ```
 
-该命令会安装 npm 依赖，并把插件注册进 profile 的 `dsh.profile.bundles` 层（官方 bundle 通道）。
+装完同样需要重启 DSH + 强刷浏览器。
 
-### 装完重启 DSH
+### 更新 / 卸载
 
-bundle 挂载在 DSH 启动时合并，装完需要**重启 DSH 进程**才生效：
-
-- 用 pm2 管理：`pm2 restart dsh-web`
-- 其他方式：重启你运行 DSH 的方式（例如直接启动的终端里 `Ctrl+C` 后重新运行 `dsh web`）
-
-重启后强刷浏览器页面（macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`），输入区右侧即出现阈值圆环 ✅
-
-> 强刷很重要：插件 Client 半随页面加载注入，普通刷新可能命中缓存导致圆环不出现。
-
-### 更新
-
-重跑安装命令即更新到最新版（装完同样重启 DSH + 强刷浏览器）。
-
-### 卸载
-
-```bash
-npx -y --package @deepseek-ai/dsh dsh plugin --profile web remove auto-compact
-```
-
-卸载后同样重启生效；若曾手动在 `cordis.patch.yml` 写过挂载行，一并删除，避免双挂载（两个 Host 半、两个圆环）。
+- **更新**：重跑一键安装命令（或手动命令），装完重启 DSH + 强刷浏览器
+- **卸载**：`npx -y --package @deepseek-ai/dsh dsh plugin --profile web remove auto-compact`，卸载后重启生效；若曾手动在 `cordis.patch.yml` 写过挂载行，一并删除，避免双挂载（两个 Host 半、两个圆环）
 
 ## 使用
 
