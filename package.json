@@ -27,7 +27,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/USERNAME/auto-compact.git"
+    "url": "git+https://github.com/JohnathonYe/auto-compact.git"
   },
   "dependencies": {
     "@deepseek-ai/schemastery": "^3.18.1"
