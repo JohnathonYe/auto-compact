@@ -16,10 +16,19 @@
 
 ## 安装
 
-> web profile 是 pnpm workspace，推荐用 `pnpm add` 安装（`npm install` 也可用，但会与 pnpm lockfile 混用）。
+### 推荐：官方插件命令（一条命令，无需手动编辑任何文件）
 
 ```bash
-# 在 DSH 的 web profile 目录下安装
+dsh plugin --profile web add auto-compact
+```
+
+该命令会自动：安装依赖 → 识别包的 `dsh.bundle` 声明 → 把 `auto-compact` 加入 profile 的 `dsh.profile.bundles` 层 → 重启/热加载后插件生效。卸载同理：`dsh plugin --profile web remove auto-compact`。
+
+> profile 名字不是 `web` 时（例如自定义 profile），把 `--profile web` 换成你的 profile 名。
+
+### 备选：手动安装（旧方式）
+
+```bash
 cd ~/.dsh/profiles/web
 pnpm add auto-compact
 ```
@@ -31,6 +40,8 @@ pnpm add auto-compact
     - id: auto-compact
       name: auto-compact
 ```
+
+> ⚠️ 如果你以前用手动行安装过，改用推荐方式前**务必先删除 `cordis.patch.yml` 里的手动行**，否则会双挂载（两个 Host 半、两个圆环）。
 
 **安装完成后必须强刷浏览器**（macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`）：插件 Client 半随页面加载注入，普通刷新可能命中缓存导致圆环不出现。强刷后输入区右侧即出现阈值圆环。
 

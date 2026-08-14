@@ -1,6 +1,6 @@
 {
   "name": "auto-compact",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "会话级自动上下文压缩插件：回合结束检测上下文用量，超过会话阈值自动 compact，摘要注入上下文后自然继续（DeepSeek Harness / DSH）",
   "type": "module",
   "main": "lib/index.js",
@@ -14,7 +14,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "lib"
+    "lib",
+    "cordis.patch.yml"
   ],
   "license": "MIT",
   "keywords": [
@@ -47,6 +48,9 @@
     "@deepseek-ai/dsh-api-remotes": "^0.1.0-rc.6"
   },
   "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "inject": [
         "@deepseek-ai/dsh-client-runtime",
