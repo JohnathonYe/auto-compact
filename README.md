@@ -16,34 +16,22 @@
 
 ## 安装
 
-### 推荐：官方插件命令（一条命令，无需手动编辑任何文件）
+### 推荐：一键脚本（装完刷新页面就能用，**无需重启**）
 
 ```bash
-dsh plugin --profile web add auto-compact
+bash scripts/install.sh
 ```
 
-该命令会自动：安装依赖 → 识别包的 `dsh.bundle` 声明 → 把 `auto-compact` 加入 profile 的 `dsh.profile.bundles` 层。卸载同理：`dsh plugin --profile web remove auto-compact`。
+脚本自动完成两步：安装 npm 依赖 → 把挂载行写进 `cordis.patch.yml`。DSH 对 patch 文件有 **HMR 热监听**，写入立即生效。
 
-> profile 名字不是 `web` 时（例如自定义 profile），把 `--profile web` 换成你的 profile 名。
-
-### 装完即可用（三步）
-
-```bash
-pm2 restart dsh-web        # ① 重启 DSH（没有 pm2 就重启服务进程）
-```
-② 浏览器强刷页面：macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`
-③ 输入区右侧出现阈值圆环 ✅
-
-> 强刷很重要：插件 Client 半随页面加载注入，普通刷新可能命中缓存导致圆环不出现。
-
-### 备选：手动安装（旧方式）
+### 或手动两步（同样热生效，不用重启）
 
 ```bash
 cd ~/.dsh/profiles/web
 pnpm add auto-compact
 ```
 
-然后在 `cordis.patch.yml` 中追加插件行：
+然后在 `cordis.patch.yml` 末尾追加：
 
 ```yaml
 - insert:
@@ -51,7 +39,21 @@ pnpm add auto-compact
       name: auto-compact
 ```
 
-> ⚠️ 如果你以前用手动行安装过，改用推荐方式前**务必先删除 `cordis.patch.yml` 里的手动行**，否则会双挂载（两个 Host 半、两个圆环）。
+### 装完只需一步：强刷浏览器
+
+浏览器强刷页面（macOS `Cmd+Shift+R` / Windows·Linux `Ctrl+Shift+R`），输入区右侧即出现阈值圆环 ✅
+
+> 强刷很重要：插件 Client 半随页面加载注入，普通刷新可能命中缓存导致圆环不出现。
+
+### 备选：官方 bundle 通道（需要重启 DSH）
+
+```bash
+dsh plugin --profile web add auto-compact
+```
+
+该通道把插件加进 profile 的 `dsh.profile.bundles` 层，但 manifest 不热监听，装完需要重启 DSH 进程才生效。
+
+> 卸载：`pnpm remove auto-compact`（热挂载方式）或 `dsh plugin --profile web remove auto-compact`（bundle 方式），并删除挂载行。切换安装方式前先删掉旧的挂载行/依赖，避免双挂载（两个 Host 半、两个圆环）。
 
 ## 使用
 
