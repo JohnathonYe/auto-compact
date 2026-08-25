@@ -1,22 +1,12 @@
 # dsh-auto-compact
 
+**中文** · [English](./README.en.md)
+
 **会话级自动上下文压缩插件**（DeepSeek Harness / DSH）
 
 ![自动压缩阈值面板](docs/screenshots/panel.png)
 
-## English
-
-**dsh-auto-compact** is a session-level automatic context-compaction plugin for DeepSeek Harness (DSH). It renders a threshold ring to the right of the input area: the current session's context usage is shown in real time, and you can drag a slider to set the compaction threshold for that session (1%–90%, **default 50%**). Whenever usage exceeds the threshold, the plugin automatically triggers a context compaction (compact) — it checks once before every step in a turn and once more when the turn ends — then injects the compacted summary back into the context so the session continues naturally, with no manual intervention and no extra "continue" message.
-
-### Key features
-
-- 🔴 **Session-level threshold** — each session is configured independently, persisted by `sessionId`
-- 📊 **Real-time usage** — same source as the built-in ContextMeter (`useProjection("contextPressure")`), refreshed live while the panel is open, no polling
-- 🎚️ **Fine 1%–90% tuning** — 1% steps for precise control (**defaults to 50% when unset**)
-- 🤖 **Fully automatic** — checked before each step in a turn and at turn end → auto-compacts over threshold → summary injected and the turn continues naturally
-- 🛡️ **Crash-safe** — all checks run inside `agent/pre-step` (waterfall middleware) and `agent/turn-stopping` (serial event), fully wrapped in try/catch, never throwing
-- 💾 **Persistent** — thresholds stored under the `dsh-auto-compact` namespace in `settings.yaml`, surviving restarts
-- 🧊 **Coexists with the built-in safety net** — DSH's own `compaction-basic` (default 80% pressure threshold) remains as a fallback, without interference
+在输入区右侧显示一个阈值圆环：当前会话上下文用量实时显示，拖动滑杆设置该会话的压缩阈值（1%–90%，**默认 50%**）。每当用量超过阈值，插件自动触发上下文压缩（compact）——回合中每走一步之前检查一次，回合结束时再检查一次——压缩摘要注入上下文后会话自然继续，全程无需手动干预，也不发送任何「继续」消息。
 
 ## 特性
 
