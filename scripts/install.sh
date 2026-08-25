@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # =============================================================================
-# auto-compact 一键安装脚本（官方 CLI 方式，macOS / Linux / Windows Git Bash）
+# dsh-auto-compact 一键安装脚本（官方 CLI 方式，macOS / Linux / Windows Git Bash）
 #
 # 通过 DSH 官方插件命令安装 npm 包并自动挂载：
-#   dsh plugin --profile web add auto-compact@<version>
+#   dsh plugin --profile web add dsh-auto-compact@<version>
 #
 # 包内声明了 dsh.bundle.patch（cordis.patch.yml）：CLI 的 bundle 协调会把它
 # 自动加进 profile 的 dsh.profile.bundles，下次启动即挂载——无需手动写
@@ -32,8 +32,8 @@
 # - pnpm 11 的 minimumReleaseAge 会拒绝发布 <24h 的新版本。脚本会预写
 #   minimumReleaseAgeExclude（幂等），放行本插件，避免"重跑一次才成功"。
 # - 老版本（<1.2.0）用手动挂载行，bundle 通道激活后需移除，否则双挂载
-#   （Node 半挂两次、页面两个圆环）。脚本会幂等移除 auto-compact 挂载行。
-# - 回滚：dsh plugin --profile web remove auto-compact。
+#   （Node 半挂两次、页面两个圆环）。脚本会幂等移除旧版 auto-compact 手动挂载行。
+# - 回滚：dsh plugin --profile web remove dsh-auto-compact。
 # =============================================================================
 set -euo pipefail
 
@@ -41,7 +41,7 @@ set -euo pipefail
 for arg in "$@"; do
   if [ "$arg" = "-h" ] || [ "$arg" = "--help" ]; then
     cat <<'EOF'
-auto-compact 一键安装脚本
+dsh-auto-compact 一键安装脚本
 
 用法：bash scripts/install.sh [版本] [--restart] [--dry-run]
 
@@ -60,7 +60,7 @@ PROFILE_DIR="$DSH_HOME/profiles/web"
 WS_YML="$PROFILE_DIR/pnpm-workspace.yaml"
 PATCH_YML="$PROFILE_DIR/cordis.patch.yml"
 REGISTRY="${REGISTRY:-https://registry.npmjs.org}"
-PKG="auto-compact"
+PKG="dsh-auto-compact"
 DSH_CMD="${DSH_CMD:-dsh}"
 
 RESTART=false
@@ -129,7 +129,7 @@ if [ "$DRY_RUN" = true ]; then
   say "[dry-run] 步骤 1：确保 $WS_YML 含 minimumReleaseAgeExclude（${PKG}，放行 <24h 新版本）"
   say "[dry-run] 步骤 2：执行 $CLI plugin --profile web add $PKG@${SPEC}（安装 + bundle 自动注册）"
   say "[dry-run] 步骤 3：校验 dsh.profile.bundles 含 $PKG"
-  say "[dry-run] 步骤 4：幂等移除 $PATCH_YML 里旧的 auto-compact 手动挂载行（避免双挂载）"
+  say "[dry-run] 步骤 4：幂等移除 $PATCH_YML 里旧的 auto-compact（旧包名）手动挂载行（避免双挂载）"
   if [ "$RESTART" = true ]; then say "[dry-run] 步骤 5：pm2 restart dsh-web"; else say "[dry-run] 步骤 5：提示用户手动重启 DSH"; fi
   exit 0
 fi
@@ -140,11 +140,11 @@ const fs = require("fs");
 const p = process.argv[1];
 let t = fs.readFileSync(p, "utf8");
 const before = t;
-if (!/^\s*-\s+auto-compact\s*$/m.test(t)) {
+if (!/^\s*-\s+dsh-auto-compact\s*$/m.test(t)) {
   if (/^\s*minimumReleaseAgeExclude:\s*$/m.test(t)) {
-    t = t.replace(/^(\s*minimumReleaseAgeExclude:\s*)$/m, "$1\n  - auto-compact");
+    t = t.replace(/^(\s*minimumReleaseAgeExclude:\s*)$/m, "$1\n  - dsh-auto-compact");
   } else {
-    t += "\nminimumReleaseAgeExclude:\n  - auto-compact\n";
+    t += "\nminimumReleaseAgeExclude:\n  - dsh-auto-compact\n";
   }
 }
 if (t !== before) fs.writeFileSync(p, t);
@@ -170,7 +170,7 @@ if ! node -e '
   const bundles = p.dsh?.profile?.bundles ?? [];
   process.exit(bundles.includes(process.argv[2]) ? 0 : 1);
 ' "$PROFILE_DIR/package.json" "$PKG"; then
-  warn "auto-compact 未出现在 dsh.profile.bundles 中——挂载未注册。"
+  warn "dsh-auto-compact 未出现在 dsh.profile.bundles 中——挂载未注册。"
   warn "若上面的 pnpm 输出有异常，请检查后重跑本脚本。"
   exit 1
 fi
@@ -212,7 +212,7 @@ if (!removed) {
 }
 ' "$PATCH_YML")"
 [ "$MOUNT_RESULT" = "removed" ] \
-  && say "已从 $PATCH_YML 移除旧的 auto-compact 手动挂载行（bundle 通道接管挂载）" \
+  && say "已从 $PATCH_YML 移除旧的 auto-compact（旧包名）手动挂载行（bundle 通道接管挂载）" \
   || say "无旧手动挂载行，跳过"
 
 say "安装完成：$PKG@$SPEC"

@@ -1,12 +1,12 @@
-# auto-compact bundle patch
+# dsh-auto-compact bundle patch
 #
 # This file is the `dsh.bundle.patch` layer of the published npm package:
 # when installed through the official CLI —
 #
-#   dsh plugin --profile <name> add auto-compact
+#   dsh plugin --profile <name> add dsh-auto-compact
 #
 # — the command reconciles `dsh.profile.bundles` against installed packages
-# and, seeing this declaration, appends `auto-compact` to the bundle stack.
+# and, seeing this declaration, appends `dsh-auto-compact` to the bundle stack.
 # The profile boot then merges THIS patch (a single `insert` of the plugin
 # row) exactly like a manual cordis.patch.yml mount line. No profile file
 # edits needed — one command installs and mounts.
@@ -15,5 +15,5 @@
 # cordis.patch.yml, remove it before switching to the bundle channel to
 # avoid double-mounting (two Host halves, two rings).
 - insert:
-    - id: auto-compact
-      name: 'auto-compact'
+    - id: dsh-auto-compact
+      name: 'dsh-auto-compact'
