@@ -51,6 +51,18 @@ npx -y --package @deepseek-ai/dsh dsh plugin --profile web add dsh-auto-compact
 
 装完同样需要重启 DSH + 强刷浏览器。
 
+### 从本地 checkout 安装（npm 未发布时）
+
+`dsh-auto-compact` 目前尚未发布到 npm，上面的 `dsh plugin --profile web add dsh-auto-compact` 需要可用的 npm 源。若你只想跑本地代码，直接把 checkout 链接进 profile：
+
+```bash
+git clone https://github.com/JohnathonYe/auto-compact.git
+cd auto-compact
+npx -y --package @deepseek-ai/dsh dsh plugin --profile web add "$PWD"
+```
+
+pnpm 会以 `link:` 方式把 profile 指向这份 checkout（改完代码重启 DSH 即生效，无需重装）；包内声明的 `dsh.bundle.patch` 仍会被 CLI 协调进 `dsh.profile.bundles`。
+
 ### 更新 / 卸载
 
 - **更新**：重跑一键安装命令（或手动命令），装完重启 DSH + 强刷浏览器
