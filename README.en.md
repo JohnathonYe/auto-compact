@@ -15,7 +15,7 @@
 - 🎚️ **Fine 1%–90% tuning** — 1% steps for precise control (**defaults to 50% when unset**)
 - 🤖 **Fully automatic** — checked before each step in a turn and at turn end → auto-compacts over threshold → summary injected and the turn continues naturally
 - 🛡️ **Crash-safe** — all checks run inside `agent/pre-step` (waterfall middleware) and `agent/turn-stopping` (serial event), fully wrapped in try/catch, never throwing
-- 💾 **Persistent** — thresholds stored under the `dsh-auto-compact` namespace in `settings.yaml`, surviving restarts
+- 💾 **Persistent** — thresholds live in the plugin's own JSON file (`$DSH_HOME/dsh-auto-compact.json`, default `~/.dsh/dsh-auto-compact.json`), surviving restarts
 - 🧊 **Coexists with the built-in safety net** — DSH's own `compaction-basic` (default 80% pressure threshold) remains as a fallback, without interference
 
 ## Installation
@@ -78,7 +78,7 @@ pnpm registers the profile dependency as `link:`, so editing the code takes effe
 ## How it works
 
 - **Host half** (`lib/index.js`): listens for `agent/pre-step` (before each step in a turn, waterfall middleware) and `agent/turn-stopping` (turn end, serial event), reads the current session threshold and usage (`tokenMeter.measure()` / `contextPressure` projection), and when over threshold calls `agentPresets.serviceFor(agent, 'compaction').compactIfNeeded(agent, 'context-overflow', signal)` to compact — taking the context-overflow path, bypassing the engine's own 0.8 threshold check, fully controlled by the slider.
-- **Client half** (`lib/client.js`): registers the ring UI in the `conversation.input.right` slot; the threshold is read/written via a custom webServer route `/dsh-auto-compact/api` (host side writes directly to the settings service, bypassing DSH `api.settings`'s official namespace allowlist) (`dsh-auto-compact.thresholds[sessionId]`); usage comes from the real-time `useProjection("contextPressure")` projection.
+- **Client half** (`lib/client.js`): registers the ring UI in the `conversation.input.right` slot; the threshold is read/written via a custom webServer route `/dsh-auto-compact/api` (host side reads and writes the JSON store above); usage comes from the real-time `useProjection("contextPressure")` projection.
 
 ## Dependencies
 

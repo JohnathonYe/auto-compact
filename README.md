@@ -15,7 +15,7 @@
 - 🎚️ **1%–90% 细腻调节**：步进 1%，适合精细控制（**未设置时默认 50%**）
 - 🤖 **全自动**：回合中每步前 + 回合结束自动检测 → 超阈值自动 compact → 摘要注入后自然继续
 - 🛡️ **零崩溃风险**：所有检查都在 `agent/pre-step`（waterfall 中间件）与 `agent/turn-stopping`（串行事件）里做，全程 try/catch，绝不抛出
-- 💾 **持久化**：阈值存于 `settings.yaml` 的 `dsh-auto-compact` 命名空间，重启不丢
+- 💾 **持久化**：阈值存于插件自己的 JSON 文件（`$DSH_HOME/dsh-auto-compact.json`，默认 `~/.dsh/dsh-auto-compact.json`），重启不丢
 - 🧊 **与内置安全网并存**：DSH 自带的 `compaction-basic`（默认 80% 压力阈值）保留为兜底，互不干扰
 
 ## 安装
@@ -78,7 +78,7 @@ pnpm 会以 `link:` 方式把 profile 指向这份 checkout（改完代码重启
 ## 工作原理
 
 - **Host 半**（`lib/index.js`）：监听 `agent/pre-step`（回合中每步之前，waterfall 中间件）与 `agent/turn-stopping`（回合结束，串行事件）两个事件，读取当前会话阈值与用量（`tokenMeter.measure()` / `contextPressure` 投影），超阈值时调用 `agentPresets.serviceFor(agent, 'compaction').compactIfNeeded(agent, 'context-overflow', signal)` 执行压缩 —— 走 context-overflow 分支，绕过引擎自身的 0.8 阈值检查，完全由滑杆决定。
-- **Client 半**（`lib/client.js`）：在 `conversation.input.right` 槽注册圆环 UI；阈值经自定义 webServer 路由 `/dsh-auto-compact/api`（host 侧直写 settings 服务，绕过 DSH `api.settings` 的官方命名空间白名单）读写（`dsh-auto-compact.thresholds[sessionId]`）；用量来自 `useProjection("contextPressure")` 实时投影。
+- **Client 半**（`lib/client.js`）：在 `conversation.input.right` 槽注册圆环 UI；阈值经自定义 webServer 路由 `/dsh-auto-compact/api`（host 侧读写上面的 JSON 阈值存储）读写；用量来自 `useProjection("contextPressure")` 实时投影。
 
 ## 依赖
 
